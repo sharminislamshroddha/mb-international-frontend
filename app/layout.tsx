@@ -1,3 +1,4 @@
+import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
 
 const inter = Inter({
@@ -17,7 +18,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${poppins.variable}`}>
         {children}
       </body>

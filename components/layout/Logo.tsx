@@ -1,15 +1,33 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function Logo() {
+interface LogoProps {
+  width?: number;
+  height?: number;
+  className?: string;
+  href?: string;
+  priority?: boolean;
+}
+
+export default function Logo({
+  width = 180,
+  height = 60,
+  className = "",
+  href = "/",
+  priority = false,
+}: LogoProps) {
   return (
-    <Link href="/">
+    <Link
+      href={href}
+      aria-label="M&B International Home"
+      className={className}
+    >
       <Image
         src="/logo/logo.png"
         alt="M&B International"
-        width={150}
-        height={60}
-        priority
+        width={width}
+        height={height}
+        priority={priority}
       />
     </Link>
   );

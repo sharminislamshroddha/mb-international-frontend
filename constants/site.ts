@@ -1,10 +1,16 @@
-export const siteConfig = {
+export const SITE = {
   name: "M&B International",
-  description: "Connecting Quality, Delivering Trust",
-  url: "https://mbinternational.com",
 
-  company: {
-    email: "info@mbinternational.com",
-    phone: "+8801XXXXXXXXX",
-  },
+  slogan: "Connecting Quality, Delivering Trust",
+
+  description:
+    "M&B International is a trusted supplier of premium electronics, appliances, industrial equipment, and modern technology solutions.",
+
+  phone: "+88017XXXXXXXX",
+
+  email: "info@mbinternational.com",
+
+  address: "Dhaka, Bangladesh",
+
+  freeShippingText: "Free shipping on orders over ৳5,000",
 };
