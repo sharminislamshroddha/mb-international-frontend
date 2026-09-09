@@ -89,6 +89,7 @@ export default function AdminProductsPage() {
 
         <Button
           render={<Link href="/admin/products/new" />}
+          nativeButton={false}
           className="gap-1.5"
         >
           <Plus className="h-4 w-4" />
@@ -199,6 +200,7 @@ export default function AdminProductsPage() {
                               href={`/admin/products/${product.id}`}
                             />
                           }
+                          nativeButton={false}
                         >
                           <Pencil className="h-3.5 w-3.5" />
                         </Button>

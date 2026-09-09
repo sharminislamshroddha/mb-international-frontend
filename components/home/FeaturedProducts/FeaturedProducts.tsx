@@ -49,6 +49,7 @@ export default function FeaturedProducts() {
               size="lg"
               variant="outline"
               render={<Link href="/shop" />}
+              nativeButton={false}
             >
               View All Products
             </Button>

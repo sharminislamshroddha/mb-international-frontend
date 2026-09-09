@@ -40,6 +40,7 @@ export default function MobileNavbar() {
             <SheetClose
               key={item.href}
               render={<Link href={item.href} />}
+              nativeButton={false}
               className="rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-muted"
             >
               {item.label}
