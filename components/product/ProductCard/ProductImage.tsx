@@ -20,6 +20,7 @@ export default function ProductImage({ product }: Props) {
           alt={product.name}
           fill
           sizes="(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw"
+          unoptimized
           className="object-cover transition-transform duration-300 group-hover:scale-105"
         />
       ) : (

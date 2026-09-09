@@ -49,6 +49,7 @@ export default function WishlistPage() {
                     alt={item.name}
                     fill
                     sizes="(min-width: 1024px) 33vw, 50vw"
+                    unoptimized
                     className="object-cover"
                   />
                 )}

@@ -61,6 +61,7 @@ export default function ProductImageManager({
                 alt={image.altText ?? "Product image"}
                 fill
                 sizes="120px"
+                unoptimized
                 className="object-cover"
               />
 

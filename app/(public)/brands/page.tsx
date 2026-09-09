@@ -51,6 +51,7 @@ export default function BrandsPage() {
                     alt={brand.name}
                     fill
                     sizes="64px"
+                    unoptimized
                     className="object-contain"
                   />
                 ) : (

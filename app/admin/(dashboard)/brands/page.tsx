@@ -128,6 +128,7 @@ export default function AdminBrandsPage() {
                           alt={brand.name}
                           fill
                           sizes="40px"
+                          unoptimized
                           className="object-cover"
                         />
                       )}

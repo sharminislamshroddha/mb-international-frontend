@@ -139,6 +139,7 @@ export default function AdminProductsPage() {
                             alt={product.name}
                             fill
                             sizes="40px"
+                            unoptimized
                             className="object-cover"
                           />
                         )}

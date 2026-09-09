@@ -21,6 +21,7 @@ export default function CategoryCard({ category }: Props) {
               alt={category.name}
               fill
               sizes="80px"
+              unoptimized
               className="object-contain"
             />
           ) : (

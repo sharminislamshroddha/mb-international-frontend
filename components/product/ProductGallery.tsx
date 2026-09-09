@@ -24,6 +24,7 @@ export default function ProductGallery({ images, name }: Props) {
             alt={name}
             fill
             sizes="(min-width: 1024px) 500px, 100vw"
+            unoptimized
             className="object-cover"
             priority
           />
@@ -53,6 +54,7 @@ export default function ProductGallery({ images, name }: Props) {
                 alt={`${name} ${index + 1}`}
                 fill
                 sizes="64px"
+                unoptimized
                 className="object-cover"
               />
             </button>

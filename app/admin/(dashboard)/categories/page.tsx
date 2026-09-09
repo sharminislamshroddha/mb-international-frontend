@@ -120,6 +120,7 @@ export default function AdminCategoriesPage() {
                           alt={category.name}
                           fill
                           sizes="40px"
+                          unoptimized
                           className="object-cover"
                         />
                       )}
