@@ -20,10 +20,11 @@ export default function CategoryCard({ category }: Props) {
               src={category.image}
               alt={category.name}
               fill
+              sizes="80px"
               className="object-contain"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center rounded-full bg-muted/10 text-lg font-semibold text-muted">
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-primary/10 text-lg font-semibold text-primary">
               {category.name.slice(0, 2).toUpperCase()}
             </div>
           )}

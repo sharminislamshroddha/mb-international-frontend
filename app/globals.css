@@ -2,16 +2,36 @@
 
 @theme {
   --color-primary: #0A2A66;
+  --color-primary-foreground: #FFFFFF;
+
   --color-secondary: #C9962C;
+  --color-secondary-foreground: #1F2937;
 
   --color-background: #FFFFFF;
   --color-foreground: #111827;
 
-  --color-muted: #6B7280;
+  --color-card: #FFFFFF;
+  --color-card-foreground: #111827;
+
+  --color-popover: #FFFFFF;
+  --color-popover-foreground: #111827;
+
+  --color-accent: #F3F4F6;
+  --color-accent-foreground: #111827;
+
+  --color-muted: #F3F4F6;
+  --color-muted-foreground: #6B7280;
+
   --color-border: #E5E7EB;
+  --color-input: #E5E7EB;
+  --color-ring: #0A2A66;
 
   --color-success: #16A34A;
+  --color-success-foreground: #FFFFFF;
+
   --color-danger: #DC2626;
+  --color-destructive: #DC2626;
+  --color-destructive-foreground: #FFFFFF;
 
   --radius: 12px;
 

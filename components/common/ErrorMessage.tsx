@@ -9,7 +9,7 @@ export default function ErrorMessage({
 }: Props) {
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-16 text-center">
-      <p className="text-sm text-danger">{message}</p>
+      <p className="text-sm text-destructive">{message}</p>
 
       {onRetry && (
         <button
