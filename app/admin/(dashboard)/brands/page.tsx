@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -50,6 +50,16 @@ export default function AdminBrandsPage() {
         id: brand.id,
         payload: { name: brand.name, isActive: true },
       });
+    }
+  }
+
+  function handleDelete(brand: ApiBrand) {
+    if (
+      window.confirm(
+        `Delete "${brand.name}"? It will no longer appear in the store.`
+      )
+    ) {
+      deleteBrand.mutate(brand.id);
     }
   }
 
@@ -146,14 +156,26 @@ export default function AdminBrandsPage() {
                     </button>
                   </td>
                   <td className="px-4 py-3">
-                    <Button
-                      size="icon-sm"
-                      variant="outline"
-                      aria-label="Edit brand"
-                      onClick={() => openEdit(brand)}
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        aria-label="Edit brand"
+                        onClick={() => openEdit(brand)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        aria-label="Delete brand"
+                        disabled={!brand.isActive}
+                        onClick={() => handleDelete(brand)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
