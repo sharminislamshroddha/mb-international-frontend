@@ -1,10 +1,20 @@
 import { apiClient } from "@/lib/api/client";
 import { ApiPaginatedResponse, ApiSuccessResponse } from "@/types/api/common";
 import {
+  ApiAdminReview,
   ApiReview,
   CreateReviewPayload,
+  ReviewQueryParams,
   UpdateReviewPayload,
 } from "@/types/api/review";
+
+export async function getAllReviews(params?: ReviewQueryParams) {
+  const { data } = await apiClient.get<
+    ApiPaginatedResponse<ApiAdminReview>
+  >("/reviews", { params });
+
+  return data;
+}
 
 export async function getProductReviews(
   productId: string,

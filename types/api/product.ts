@@ -64,3 +64,33 @@ export interface ProductQueryParams {
   sortBy?: "name" | "price" | "createdAt" | "stockQuantity" | "averageRating";
   sortOrder?: "asc" | "desc";
 }
+
+export interface BrandPayload {
+  name: string;
+  description?: string;
+  logoUrl?: string;
+  websiteUrl?: string;
+  isActive?: boolean;
+}
+
+export interface ProductPayload {
+  categoryId: string;
+  brandId?: string;
+  sku: string;
+  name: string;
+  shortDescription?: string;
+  description?: string;
+  price: number;
+  salePrice?: number;
+  stockQuantity: number;
+  status?: ApiProductStatus;
+  isActive?: boolean;
+  isFeatured?: boolean;
+}
+
+export interface ProductImagePayload {
+  imageUrl: string;
+  altText?: string;
+  isPrimary?: boolean;
+  sortOrder?: number;
+}

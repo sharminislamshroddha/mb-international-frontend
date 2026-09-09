@@ -16,6 +16,22 @@ export interface ApiReview {
   user: ApiReviewAuthor;
 }
 
+export interface ApiAdminReview extends ApiReview {
+  product: {
+    id: string;
+    name: string;
+    slug: string;
+  };
+}
+
+export interface ReviewQueryParams {
+  page?: number;
+  limit?: number;
+  rating?: number;
+  sortBy?: "createdAt" | "rating";
+  sortOrder?: "asc" | "desc";
+}
+
 export interface CreateReviewPayload {
   rating: number;
   title?: string;

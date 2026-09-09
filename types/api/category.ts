@@ -8,3 +8,19 @@ export interface ApiCategory {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface CategoryQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  isActive?: boolean;
+  sortBy?: "name" | "createdAt";
+  sortOrder?: "asc" | "desc";
+}
+
+export interface CategoryPayload {
+  name: string;
+  description?: string;
+  imageUrl?: string;
+  isActive?: boolean;
+}
