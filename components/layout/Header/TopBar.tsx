@@ -1,12 +1,19 @@
-import Link from "next/link";
+"use client";
+
 import { Phone, Truck } from "lucide-react";
+import Link from "next/link";
+
+import { ROUTES } from "@/constants/routes";
+import { SITE } from "@/constants/site";
+import { useAuthStore } from "@/store/auth-store";
 
 import Container from "../Container";
-import { SITE } from "@/constants/site";
 
 export default function TopBar() {
+  const user = useAuthStore((state) => state.user);
+
   return (
-    <div className="hidden border-b bg-slate-900 text-white lg:block">
+    <div className="hidden border-b border-border bg-foreground text-background lg:block">
       <Container>
         <div className="flex h-10 items-center justify-between text-sm">
           <div className="flex items-center gap-6">
@@ -22,11 +29,25 @@ export default function TopBar() {
           </div>
 
           <div className="flex items-center gap-5">
-            <Link href="/track-order">Track Order</Link>
+            <Link href={ROUTES.FAQ} className="hover:text-secondary">
+              Help
+            </Link>
 
-            <Link href="/contact">Help</Link>
-
-            <Link href="/login">Login</Link>
+            {user ? (
+              <Link
+                href={ROUTES.PROFILE}
+                className="hover:text-secondary"
+              >
+                My Account
+              </Link>
+            ) : (
+              <Link
+                href={ROUTES.LOGIN}
+                className="hover:text-secondary"
+              >
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </Container>

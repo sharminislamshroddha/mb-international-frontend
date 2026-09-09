@@ -28,6 +28,7 @@ export default function Logo({
         width={width}
         height={height}
         priority={priority}
+        style={{ height: "auto" }}
       />
     </Link>
   );
