@@ -6,6 +6,7 @@ import {
   LogOut,
   MessageSquareText,
   Package,
+  ShieldCheck,
   Tags,
   Users,
 } from "lucide-react";
@@ -48,7 +49,13 @@ const NAV_ITEMS = [
     superAdminOnly: false,
   },
   {
-    label: "Admins & Users",
+    label: "Admins",
+    href: "/admin/admins",
+    icon: ShieldCheck,
+    superAdminOnly: true,
+  },
+  {
+    label: "Customers",
     href: "/admin/users",
     icon: Users,
     superAdminOnly: true,

@@ -8,9 +8,16 @@ import {
 import { ApiPaginatedResponse, ApiSuccessResponse } from "@/types/api/common";
 
 export async function getUsers(params?: AdminUserQueryParams) {
+  const { role, ...rest } = params ?? {};
+
   const { data } = await apiClient.get<
     ApiPaginatedResponse<ApiUser>
-  >("/users", { params });
+  >("/users", {
+    params: {
+      ...rest,
+      role: Array.isArray(role) ? role.join(",") : role,
+    },
+  });
 
   return data;
 }

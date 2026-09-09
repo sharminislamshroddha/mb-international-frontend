@@ -24,7 +24,7 @@ export interface AdminUserQueryParams {
   page?: number;
   limit?: number;
   search?: string;
-  role?: UserRole;
+  role?: UserRole | UserRole[];
   isActive?: boolean;
   sortBy?: "firstName" | "email" | "createdAt";
   sortOrder?: "asc" | "desc";

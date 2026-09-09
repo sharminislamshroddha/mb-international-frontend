@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldPlus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState } from "react";
 
 import EmptyState from "@/components/common/EmptyState";
@@ -16,20 +16,25 @@ import {
 } from "@/hooks/mutations/useUserAdmin";
 import { useAdminUsers } from "@/hooks/queries/useAdminUsers";
 import { useRequireSuperAdmin } from "@/hooks/useRequireSuperAdmin";
+import { ApiUser, UserRole } from "@/types/api/auth";
+
+import CreateAdminDialog from "./_components/CreateAdminDialog";
 
 const PAGE_SIZE = 10;
+const ROLE_OPTIONS: UserRole[] = ["CUSTOMER", "ADMIN", "SUPER_ADMIN"];
 
-export default function AdminCustomersPage() {
-  const { isAuthorized } = useRequireSuperAdmin();
+export default function AdminAccountsPage() {
+  const { user: currentUser, isAuthorized } = useRequireSuperAdmin();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const { data, isLoading, isError, refetch } = useAdminUsers(
     {
       page,
       limit: PAGE_SIZE,
       search: search || undefined,
-      role: "CUSTOMER",
+      role: ["ADMIN", "SUPER_ADMIN"],
       sortBy: "createdAt",
       sortOrder: "desc",
     },
@@ -43,15 +48,29 @@ export default function AdminCustomersPage() {
     return <Loading label="Checking access..." />;
   }
 
+  function isSelf(user: ApiUser) {
+    return user.id === currentUser?.id;
+  }
+
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-heading text-2xl font-bold">
-          Customers
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          View and manage customer accounts.
-        </p>
+      <div className="mb-6 flex items-center justify-between gap-4">
+        <div>
+          <h1 className="font-heading text-2xl font-bold">
+            Admins
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Manage who has admin access to the store.
+          </p>
+        </div>
+
+        <Button
+          onClick={() => setDialogOpen(true)}
+          className="gap-1.5"
+        >
+          <Plus className="h-4 w-4" />
+          New Admin
+        </Button>
       </div>
 
       <div className="mb-4">
@@ -66,17 +85,17 @@ export default function AdminCustomersPage() {
         />
       </div>
 
-      {isLoading && <Loading label="Loading customers..." />}
+      {isLoading && <Loading label="Loading admins..." />}
 
       {isError && (
         <ErrorMessage
-          message="Failed to load customers."
+          message="Failed to load admins."
           onRetry={() => refetch()}
         />
       )}
 
       {data && data.data.length === 0 && (
-        <EmptyState title="No customers found" />
+        <EmptyState title="No admins found" />
       )}
 
       {data && data.data.length > 0 && (
@@ -87,9 +106,8 @@ export default function AdminCustomersPage() {
                 <th className="px-4 py-3 font-medium">Name</th>
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Sign-in</th>
-                <th className="px-4 py-3 font-medium">Joined</th>
+                <th className="px-4 py-3 font-medium">Role</th>
                 <th className="px-4 py-3 font-medium">Status</th>
-                <th className="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -97,6 +115,11 @@ export default function AdminCustomersPage() {
                 <tr key={user.id}>
                   <td className="px-4 py-3 font-medium">
                     {user.firstName} {user.lastName}
+                    {isSelf(user) && (
+                      <span className="ml-1.5 text-xs text-muted-foreground">
+                        (you)
+                      </span>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">
                     {user.email}
@@ -104,18 +127,36 @@ export default function AdminCustomersPage() {
                   <td className="px-4 py-3 text-muted-foreground">
                     {user.provider}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                  <td className="px-4 py-3">
+                    <select
+                      value={user.role}
+                      disabled={isSelf(user)}
+                      onChange={(event) =>
+                        updateRole.mutate({
+                          id: user.id,
+                          role: event.target.value as UserRole,
+                        })
+                      }
+                      className="h-8 rounded-lg border border-input bg-transparent px-2 text-sm outline-none disabled:opacity-50"
+                    >
+                      {ROLE_OPTIONS.map((role) => (
+                        <option key={role} value={role}>
+                          {role}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-4 py-3">
                     <button
                       type="button"
+                      disabled={isSelf(user)}
                       onClick={() =>
                         updateStatus.mutate({
                           id: user.id,
                           isActive: !user.isActive,
                         })
                       }
+                      className="disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Badge
                         className={
@@ -127,23 +168,6 @@ export default function AdminCustomersPage() {
                         {user.isActive ? "Active" : "Deactivated"}
                       </Badge>
                     </button>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="gap-1.5"
-                      disabled={updateRole.isPending}
-                      onClick={() =>
-                        updateRole.mutate({
-                          id: user.id,
-                          role: "ADMIN",
-                        })
-                      }
-                    >
-                      <ShieldPlus className="h-3.5 w-3.5" />
-                      Promote to Admin
-                    </Button>
                   </td>
                 </tr>
               ))}
@@ -159,6 +183,11 @@ export default function AdminCustomersPage() {
           </div>
         </div>
       )}
+
+      <CreateAdminDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+      />
     </div>
   );
 }
