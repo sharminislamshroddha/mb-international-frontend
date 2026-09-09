@@ -1,6 +1,8 @@
 import "./globals.css";
 import { Inter, Poppins } from "next/font/google";
 
+import { Providers } from "./providers";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -20,7 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${inter.variable} ${poppins.variable}`}>
-        {children}
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

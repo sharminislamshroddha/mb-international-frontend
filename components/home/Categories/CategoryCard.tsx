@@ -15,12 +15,18 @@ export default function CategoryCard({ category }: Props) {
     >
       <div className="flex flex-col items-center text-center">
         <div className="relative h-20 w-20">
-          <Image
-            src={category.image}
-            alt={category.name}
-            fill
-            className="object-contain"
-          />
+          {category.image ? (
+            <Image
+              src={category.image}
+              alt={category.name}
+              fill
+              className="object-contain"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-muted/10 text-lg font-semibold text-muted">
+              {category.name.slice(0, 2).toUpperCase()}
+            </div>
+          )}
         </div>
 
         <h3 className="mt-5 text-lg font-semibold">
