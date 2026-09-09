@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
+import ImageUploadInput from "@/components/admin/ImageUploadInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -116,17 +117,11 @@ function BrandForm({
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="logoUrl" className="text-sm font-medium">
-          Logo URL
-        </label>
-        <Input
-          id="logoUrl"
-          value={logoUrl}
-          onChange={(event) => setLogoUrl(event.target.value)}
-          placeholder="https://..."
-        />
-      </div>
+      <ImageUploadInput
+        label="Logo"
+        value={logoUrl}
+        onChange={setLogoUrl}
+      />
 
       <div className="flex flex-col gap-1.5">
         <label htmlFor="websiteUrl" className="text-sm font-medium">

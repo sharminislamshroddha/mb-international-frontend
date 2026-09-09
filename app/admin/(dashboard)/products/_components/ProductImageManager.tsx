@@ -1,11 +1,12 @@
 "use client";
 
-import { ImagePlus, Star, Trash2 } from "lucide-react";
+import { ImagePlus, Loader2, Star, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useUploadImage } from "@/hooks/mutations/useUploadImage";
 import {
   useAddProductImage,
   useDeleteProductImage,
@@ -24,9 +25,11 @@ export default function ProductImageManager({
   images,
 }: Props) {
   const [imageUrl, setImageUrl] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const addImage = useAddProductImage(productId);
   const updateImage = useUpdateProductImage(productId);
   const deleteImage = useDeleteProductImage(productId);
+  const uploadImage = useUploadImage();
 
   function handleAdd(event: FormEvent) {
     event.preventDefault();
@@ -41,6 +44,22 @@ export default function ProductImageManager({
       },
       { onSuccess: () => setImageUrl("") }
     );
+  }
+
+  function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    uploadImage.mutate(file, {
+      onSuccess: (url) =>
+        addImage.mutate({
+          imageUrl: url,
+          isPrimary: images.length === 0,
+          sortOrder: images.length,
+        }),
+    });
   }
 
   return (
@@ -104,33 +123,71 @@ export default function ProductImageManager({
         </div>
       )}
 
-      <form onSubmit={handleAdd} className="flex items-end gap-2">
-        <div className="flex flex-1 flex-col gap-1.5">
-          <label htmlFor="imageUrl" className="text-sm font-medium">
-            Add image by URL
-          </label>
-          <Input
-            id="imageUrl"
-            value={imageUrl}
-            onChange={(event) => setImageUrl(event.target.value)}
-            placeholder="https://..."
-          />
-        </div>
-
-        <Button
-          type="submit"
-          variant="outline"
-          disabled={addImage.isPending}
-          className="gap-1.5"
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <form
+          onSubmit={handleAdd}
+          className="flex flex-1 items-end gap-2"
         >
-          <ImagePlus className="h-4 w-4" />
-          Add
-        </Button>
-      </form>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <label htmlFor="imageUrl" className="text-sm font-medium">
+              Add image by URL
+            </label>
+            <Input
+              id="imageUrl"
+              value={imageUrl}
+              onChange={(event) => setImageUrl(event.target.value)}
+              placeholder="https://..."
+            />
+          </div>
 
-      {addImage.isError && (
+          <Button
+            type="submit"
+            variant="outline"
+            disabled={addImage.isPending}
+            className="gap-1.5"
+          >
+            <ImagePlus className="h-4 w-4" />
+            Add
+          </Button>
+        </form>
+
+        <div className="flex flex-col gap-1.5">
+          <span className="text-sm font-medium text-transparent select-none sm:block">
+            .
+          </span>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+
+          <Button
+            type="button"
+            variant="outline"
+            disabled={uploadImage.isPending}
+            onClick={() => fileInputRef.current?.click()}
+            className="gap-1.5"
+          >
+            {uploadImage.isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ImagePlus className="h-4 w-4" />
+            )}
+            {uploadImage.isPending
+              ? "Uploading..."
+              : "Upload from device"}
+          </Button>
+        </div>
+      </div>
+
+      {(addImage.isError || uploadImage.isError) && (
         <p className="text-sm text-destructive">
-          {addImage.error?.message ?? "Failed to add image."}
+          {addImage.error?.message ??
+            uploadImage.error?.message ??
+            "Failed to add image."}
         </p>
       )}
     </div>

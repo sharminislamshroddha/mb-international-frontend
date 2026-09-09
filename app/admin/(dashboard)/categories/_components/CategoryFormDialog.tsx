@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 
+import ImageUploadInput from "@/components/admin/ImageUploadInput";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -114,17 +115,11 @@ function CategoryForm({
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="imageUrl" className="text-sm font-medium">
-          Image URL
-        </label>
-        <Input
-          id="imageUrl"
-          value={imageUrl}
-          onChange={(event) => setImageUrl(event.target.value)}
-          placeholder="https://..."
-        />
-      </div>
+      <ImageUploadInput
+        label="Image"
+        value={imageUrl}
+        onChange={setImageUrl}
+      />
 
       {mutation.isError && (
         <p className="text-sm text-destructive">
