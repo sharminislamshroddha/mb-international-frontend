@@ -17,3 +17,9 @@ export async function getCategories() {
 
   return data.data.map(mapCategory);
 }
+
+export async function getCategoryBySlug(slug: string) {
+  const categories = await getCategories();
+
+  return categories.find((category) => category.slug === slug) ?? null;
+}
