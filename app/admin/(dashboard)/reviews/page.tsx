@@ -10,6 +10,7 @@ import Loading from "@/components/common/Loading";
 import Pagination from "@/components/common/Pagination";
 import StarRating from "@/components/common/StarRating";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useDeleteReviewAdmin } from "@/hooks/mutations/useReviewAdmin";
 import { useAdminReviews } from "@/hooks/queries/useAdminReviews";
 import { ApiAdminReview } from "@/types/api/review";
@@ -18,18 +19,42 @@ import ReviewFormDialog from "./_components/ReviewFormDialog";
 
 const PAGE_SIZE = 15;
 
+const SORT_OPTIONS = {
+  newest: { label: "Newest", sortBy: "createdAt", sortOrder: "desc" },
+  oldest: { label: "Oldest", sortBy: "createdAt", sortOrder: "asc" },
+  "rating-desc": {
+    label: "Highest Rating",
+    sortBy: "rating",
+    sortOrder: "desc",
+  },
+  "rating-asc": {
+    label: "Lowest Rating",
+    sortBy: "rating",
+    sortOrder: "asc",
+  },
+} as const;
+
+type SortKey = keyof typeof SORT_OPTIONS;
+
 export default function AdminReviewsPage() {
   const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [rating, setRating] = useState("");
+  const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ApiAdminReview | null>(
     null
   );
 
+  const sortOption = SORT_OPTIONS[sortKey];
+
   const { data, isLoading, isError, refetch } = useAdminReviews({
     page,
     limit: PAGE_SIZE,
-    sortBy: "createdAt",
-    sortOrder: "desc",
+    search: search || undefined,
+    rating: rating ? Number(rating) : undefined,
+    sortBy: sortOption.sortBy,
+    sortOrder: sortOption.sortOrder,
   });
 
   const deleteReview = useDeleteReviewAdmin();
@@ -50,6 +75,48 @@ export default function AdminReviewsPage() {
         </p>
       </div>
 
+      <div className="mb-4 flex flex-wrap items-center gap-3">
+        <Input
+          placeholder="Search by product, reviewer, or comment..."
+          value={search}
+          onChange={(event) => {
+            setSearch(event.target.value);
+            setPage(1);
+          }}
+          className="max-w-xs"
+        />
+
+        <select
+          value={rating}
+          onChange={(event) => {
+            setRating(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Ratings</option>
+          <option value="5">5 Stars</option>
+          <option value="4">4 Stars</option>
+          <option value="3">3 Stars</option>
+          <option value="2">2 Stars</option>
+          <option value="1">1 Star</option>
+        </select>
+
+        <select
+          value={sortKey}
+          onChange={(event) =>
+            setSortKey(event.target.value as SortKey)
+          }
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          {Object.entries(SORT_OPTIONS).map(([key, option]) => (
+            <option key={key} value={key}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {isLoading && <Loading label="Loading reviews..." />}
 
       {isError && (
@@ -60,7 +127,13 @@ export default function AdminReviewsPage() {
       )}
 
       {data && data.data.length === 0 && (
-        <EmptyState title="No reviews yet" />
+        <EmptyState
+          title={
+            search || rating
+              ? "No reviews match your filters"
+              : "No reviews yet"
+          }
+        />
       )}
 
       {data && data.data.length > 0 && (

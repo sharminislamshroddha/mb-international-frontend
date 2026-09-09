@@ -27,6 +27,7 @@ export interface ApiAdminReview extends ApiReview {
 export interface ReviewQueryParams {
   page?: number;
   limit?: number;
+  search?: string;
   rating?: number;
   sortBy?: "createdAt" | "rating";
   sortOrder?: "asc" | "desc";
