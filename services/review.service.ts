@@ -52,3 +52,14 @@ export async function updateReview(
 export async function deleteReview(reviewId: string) {
   await apiClient.delete(`/reviews/${reviewId}`);
 }
+
+export async function setReviewPublished(
+  reviewId: string,
+  isPublished: boolean
+) {
+  const { data } = await apiClient.patch<
+    ApiSuccessResponse<ApiAdminReview>
+  >(`/reviews/${reviewId}/publish`, { isPublished });
+
+  return data.data;
+}

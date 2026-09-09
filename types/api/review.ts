@@ -11,6 +11,7 @@ export interface ApiReview {
   rating: number;
   title: string | null;
   comment: string | null;
+  isPublished: boolean;
   createdAt: string;
   updatedAt: string;
   user: ApiReviewAuthor;
@@ -31,6 +32,7 @@ export interface ReviewQueryParams {
   rating?: number;
   productId?: string;
   categoryId?: string;
+  isPublished?: boolean;
   sortBy?: "createdAt" | "rating";
   sortOrder?: "asc" | "desc";
 }

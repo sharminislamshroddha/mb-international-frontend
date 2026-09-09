@@ -1,6 +1,6 @@
 "use client";
 
-import { Star } from "lucide-react";
+import { CheckCircle2, Star } from "lucide-react";
 import { FormEvent, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ export default function ReviewForm({ productId }: Props) {
   const [hoverRating, setHoverRating] = useState(0);
   const [title, setTitle] = useState("");
   const [comment, setComment] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const createReview = useCreateReview(productId);
 
   function handleSubmit(event: FormEvent) {
@@ -33,6 +34,7 @@ export default function ReviewForm({ productId }: Props) {
           setTitle("");
           setComment("");
           setRating(5);
+          setSubmitted(true);
         },
       }
     );
@@ -91,6 +93,14 @@ export default function ReviewForm({ productId }: Props) {
         <p className="text-sm text-destructive">
           {createReview.error?.message ??
             "Failed to submit review."}
+        </p>
+      )}
+
+      {submitted && (
+        <p className="flex items-start gap-2 text-sm text-success">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+          Thanks! Your review has been submitted and will appear once
+          it&apos;s approved.
         </p>
       )}
 

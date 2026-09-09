@@ -9,9 +9,13 @@ import ErrorMessage from "@/components/common/ErrorMessage";
 import Loading from "@/components/common/Loading";
 import Pagination from "@/components/common/Pagination";
 import StarRating from "@/components/common/StarRating";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useDeleteReviewAdmin } from "@/hooks/mutations/useReviewAdmin";
+import {
+  useDeleteReviewAdmin,
+  useSetReviewPublished,
+} from "@/hooks/mutations/useReviewAdmin";
 import { useAdminProducts } from "@/hooks/queries/useAdminProducts";
 import { useAdminReviews } from "@/hooks/queries/useAdminReviews";
 import { useCategories } from "@/hooks/queries/useCategories";
@@ -42,6 +46,7 @@ export default function AdminReviewsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [rating, setRating] = useState("");
+  const [status, setStatus] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [productId, setProductId] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("newest");
@@ -65,6 +70,7 @@ export default function AdminReviewsPage() {
     limit: PAGE_SIZE,
     search: search || undefined,
     rating: rating ? Number(rating) : undefined,
+    isPublished: status ? status === "published" : undefined,
     categoryId: categoryId || undefined,
     productId: productId || undefined,
     sortBy: sortOption.sortBy,
@@ -72,8 +78,13 @@ export default function AdminReviewsPage() {
   });
 
   const deleteReview = useDeleteReviewAdmin();
+  const setPublished = useSetReviewPublished();
   const hasActiveFilters =
-    !!search || !!rating || !!categoryId || !!productId;
+    !!search ||
+    !!rating ||
+    !!status ||
+    !!categoryId ||
+    !!productId;
 
   function handleCategoryChange(value: string) {
     setCategoryId(value);
@@ -122,6 +133,19 @@ export default function AdminReviewsPage() {
           <option value="3">3 Stars</option>
           <option value="2">2 Stars</option>
           <option value="1">1 Star</option>
+        </select>
+
+        <select
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Statuses</option>
+          <option value="published">Published</option>
+          <option value="pending">Pending</option>
         </select>
 
         <select
@@ -197,6 +221,7 @@ export default function AdminReviewsPage() {
                 <th className="px-4 py-3 font-medium">Rating</th>
                 <th className="px-4 py-3 font-medium">Comment</th>
                 <th className="px-4 py-3 font-medium">Date</th>
+                <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
@@ -225,6 +250,28 @@ export default function AdminReviewsPage() {
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
                     {new Date(review.createdAt).toLocaleDateString()}
+                  </td>
+                  <td className="px-4 py-3">
+                    <button
+                      type="button"
+                      disabled={setPublished.isPending}
+                      onClick={() =>
+                        setPublished.mutate({
+                          id: review.id,
+                          isPublished: !review.isPublished,
+                        })
+                      }
+                    >
+                      <Badge
+                        className={
+                          review.isPublished
+                            ? "border-transparent bg-success/10 text-success"
+                            : "border-transparent bg-secondary/10 text-secondary"
+                        }
+                      >
+                        {review.isPublished ? "Published" : "Pending"}
+                      </Badge>
+                    </button>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-1.5">
