@@ -1,6 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -12,11 +12,18 @@ import StarRating from "@/components/common/StarRating";
 import { Button } from "@/components/ui/button";
 import { useDeleteReviewAdmin } from "@/hooks/mutations/useReviewAdmin";
 import { useAdminReviews } from "@/hooks/queries/useAdminReviews";
+import { ApiAdminReview } from "@/types/api/review";
+
+import ReviewFormDialog from "./_components/ReviewFormDialog";
 
 const PAGE_SIZE = 15;
 
 export default function AdminReviewsPage() {
   const [page, setPage] = useState(1);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<ApiAdminReview | null>(
+    null
+  );
 
   const { data, isLoading, isError, refetch } = useAdminReviews({
     page,
@@ -26,6 +33,11 @@ export default function AdminReviewsPage() {
   });
 
   const deleteReview = useDeleteReviewAdmin();
+
+  function openEdit(review: ApiAdminReview) {
+    setEditing(review);
+    setDialogOpen(true);
+  }
 
   return (
     <div>
@@ -91,14 +103,27 @@ export default function AdminReviewsPage() {
                     {new Date(review.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-4 py-3">
-                    <Button
-                      size="icon-sm"
-                      variant="outline"
-                      aria-label="Delete review"
-                      onClick={() => deleteReview.mutate(review.id)}
-                    >
-                      <Trash2 className="h-3.5 w-3.5 text-destructive" />
-                    </Button>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        aria-label="Edit review"
+                        onClick={() => openEdit(review)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        aria-label="Delete review"
+                        onClick={() =>
+                          deleteReview.mutate(review.id)
+                        }
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -114,6 +139,12 @@ export default function AdminReviewsPage() {
           </div>
         </div>
       )}
+
+      <ReviewFormDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        review={editing}
+      />
     </div>
   );
 }
