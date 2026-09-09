@@ -29,6 +29,8 @@ export interface ReviewQueryParams {
   limit?: number;
   search?: string;
   rating?: number;
+  productId?: string;
+  categoryId?: string;
   sortBy?: "createdAt" | "rating";
   sortOrder?: "asc" | "desc";
 }

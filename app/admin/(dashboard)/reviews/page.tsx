@@ -12,7 +12,9 @@ import StarRating from "@/components/common/StarRating";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useDeleteReviewAdmin } from "@/hooks/mutations/useReviewAdmin";
+import { useAdminProducts } from "@/hooks/queries/useAdminProducts";
 import { useAdminReviews } from "@/hooks/queries/useAdminReviews";
+import { useCategories } from "@/hooks/queries/useCategories";
 import { ApiAdminReview } from "@/types/api/review";
 
 import ReviewFormDialog from "./_components/ReviewFormDialog";
@@ -40,6 +42,8 @@ export default function AdminReviewsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [rating, setRating] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [productId, setProductId] = useState("");
   const [sortKey, setSortKey] = useState<SortKey>("newest");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ApiAdminReview | null>(
@@ -48,16 +52,34 @@ export default function AdminReviewsPage() {
 
   const sortOption = SORT_OPTIONS[sortKey];
 
+  const { data: categories } = useCategories();
+  const { data: products } = useAdminProducts({
+    categoryId: categoryId || undefined,
+    limit: 100,
+    sortBy: "name",
+    sortOrder: "asc",
+  });
+
   const { data, isLoading, isError, refetch } = useAdminReviews({
     page,
     limit: PAGE_SIZE,
     search: search || undefined,
     rating: rating ? Number(rating) : undefined,
+    categoryId: categoryId || undefined,
+    productId: productId || undefined,
     sortBy: sortOption.sortBy,
     sortOrder: sortOption.sortOrder,
   });
 
   const deleteReview = useDeleteReviewAdmin();
+  const hasActiveFilters =
+    !!search || !!rating || !!categoryId || !!productId;
+
+  function handleCategoryChange(value: string) {
+    setCategoryId(value);
+    setProductId("");
+    setPage(1);
+  }
 
   function openEdit(review: ApiAdminReview) {
     setEditing(review);
@@ -103,6 +125,35 @@ export default function AdminReviewsPage() {
         </select>
 
         <select
+          value={categoryId}
+          onChange={(event) => handleCategoryChange(event.target.value)}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Categories</option>
+          {categories?.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={productId}
+          onChange={(event) => {
+            setProductId(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Products</option>
+          {products?.data.map((product) => (
+            <option key={product.id} value={product.id}>
+              {product.name}
+            </option>
+          ))}
+        </select>
+
+        <select
           value={sortKey}
           onChange={(event) =>
             setSortKey(event.target.value as SortKey)
@@ -129,7 +180,7 @@ export default function AdminReviewsPage() {
       {data && data.data.length === 0 && (
         <EmptyState
           title={
-            search || rating
+            hasActiveFilters
               ? "No reviews match your filters"
               : "No reviews yet"
           }
