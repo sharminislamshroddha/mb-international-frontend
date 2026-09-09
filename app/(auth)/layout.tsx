@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ReactNode } from "react";
 
 import Logo from "@/components/layout/Header/Logo";
@@ -10,9 +9,7 @@ interface Props {
 export default function AuthLayout({ children }: Props) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-8 bg-muted/40 px-4 py-12">
-      <Link href="/">
-        <Logo width={160} height={52} />
-      </Link>
+      <Logo width={160} height={52} />
 
       {children}
     </div>

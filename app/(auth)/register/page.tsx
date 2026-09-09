@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useRegister } from "@/hooks/mutations/useRegister";
@@ -17,12 +18,16 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  function goHome() {
+    router.push("/");
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
     register.mutate(
       { firstName, lastName, email, password },
-      { onSuccess: () => router.push("/") }
+      { onSuccess: goHome }
     );
   }
 
@@ -34,6 +39,8 @@ export default function RegisterPage() {
       <p className="mb-6 text-sm text-muted-foreground">
         Join us to track orders and save your favorites.
       </p>
+
+      <SocialAuthButtons onSuccess={goHome} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">

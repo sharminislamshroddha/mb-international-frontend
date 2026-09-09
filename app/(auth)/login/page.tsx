@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FormEvent, useState } from "react";
 
+import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useLogin } from "@/hooks/mutations/useLogin";
@@ -15,13 +16,14 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  function goHome() {
+    router.push("/");
+  }
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
 
-    login.mutate(
-      { email, password },
-      { onSuccess: () => router.push("/") }
-    );
+    login.mutate({ email, password }, { onSuccess: goHome });
   }
 
   return (
@@ -32,6 +34,8 @@ export default function LoginPage() {
       <p className="mb-6 text-sm text-muted-foreground">
         Log in to your account to continue.
       </p>
+
+      <SocialAuthButtons onSuccess={goHome} />
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">

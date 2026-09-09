@@ -29,6 +29,22 @@ export async function register(payload: RegisterPayload) {
   return data.data;
 }
 
+export async function loginWithGoogle(idToken: string) {
+  const { data } = await apiClient.post<
+    ApiSuccessResponse<AuthPayload>
+  >("/auth/google", { idToken });
+
+  return data.data;
+}
+
+export async function loginWithFacebook(accessToken: string) {
+  const { data } = await apiClient.post<
+    ApiSuccessResponse<AuthPayload>
+  >("/auth/facebook", { accessToken });
+
+  return data.data;
+}
+
 export async function getMe() {
   const { data } =
     await apiClient.get<ApiSuccessResponse<ApiUser>>("/auth/me");
