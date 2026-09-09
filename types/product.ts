@@ -6,11 +6,17 @@ export interface Product {
 
   shortDescription?: string;
 
+  description?: string;
+
   image: string;
+
+  images: string[];
 
   brand: string;
 
   category: string;
+
+  categorySlug: string;
 
   price: number;
 
