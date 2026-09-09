@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Phone, Truck } from "lucide-react";
 
-import Container from "./Container";
+import Container from "../Container";
 import { SITE } from "@/constants/site";
 
 export default function TopBar() {

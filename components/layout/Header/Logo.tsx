@@ -10,8 +10,8 @@ interface LogoProps {
 }
 
 export default function Logo({
-  width = 180,
-  height = 60,
+  width = 140,
+  height = 45,
   className = "",
   href = "/",
   priority = false,
@@ -23,7 +23,7 @@ export default function Logo({
       className={className}
     >
       <Image
-        src="/logo/logo.png"
+        src="/logo/logo-light.png"
         alt="M&B International"
         width={width}
         height={height}

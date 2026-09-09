@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
-import Header from "./Header";
-import TopBar from "./TopBar";
-import Navbar from "./Navbar";
+import Header from "./Header/Header";
+import TopBar from "./Header/TopBar";
+import Navbar from "./Header/Navbar";
 
 interface Props {
   children: ReactNode;
