@@ -67,7 +67,7 @@ export default function AdminSidebar() {
 
   function handleLogout() {
     clearAuth();
-    router.push("/login");
+    router.push("/admin/login");
   }
 
   return (

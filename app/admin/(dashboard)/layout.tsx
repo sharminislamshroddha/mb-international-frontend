@@ -23,7 +23,7 @@ export default function AdminLayout({ children }: Props) {
     if (!hasHydrated) return;
 
     if (!user) {
-      router.replace("/login");
+      router.replace("/admin/login");
       return;
     }
 
