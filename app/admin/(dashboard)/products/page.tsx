@@ -17,9 +17,19 @@ import {
   useUpdateProduct,
 } from "@/hooks/mutations/useProductAdmin";
 import { useAdminProducts } from "@/hooks/queries/useAdminProducts";
+import { useBrands } from "@/hooks/queries/useBrands";
+import { useCategories } from "@/hooks/queries/useCategories";
 import { formatPrice } from "@/lib/format";
+import { ApiProductStatus } from "@/types/api/product";
 
 const PAGE_SIZE = 10;
+
+const STATUS_OPTIONS: ApiProductStatus[] = [
+  "DRAFT",
+  "ACTIVE",
+  "OUT_OF_STOCK",
+  "DISCONTINUED",
+];
 
 interface ProductRow {
   id: string;
@@ -34,17 +44,55 @@ interface ProductRow {
 export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState("");
+  const [brandId, setBrandId] = useState("");
+  const [status, setStatus] = useState("");
+  const [activeStatus, setActiveStatus] = useState("");
+  const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
+  const { data: categories } = useCategories();
+  const { data: brands } = useBrands();
 
   const { data, isLoading, isError, refetch } = useAdminProducts({
     page,
     limit: PAGE_SIZE,
     search: search || undefined,
+    categoryId: categoryId || undefined,
+    brandId: brandId || undefined,
+    status: (status as ApiProductStatus) || undefined,
+    isActive: activeStatus ? activeStatus === "active" : undefined,
+    isFeatured: featuredOnly || undefined,
+    minPrice: minPrice ? Number(minPrice) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
     sortBy: "createdAt",
     sortOrder: "desc",
   });
 
   const deleteProduct = useDeleteProduct();
   const updateProduct = useUpdateProduct();
+  const hasActiveFilters =
+    !!search ||
+    !!categoryId ||
+    !!brandId ||
+    !!status ||
+    !!activeStatus ||
+    featuredOnly ||
+    !!minPrice ||
+    !!maxPrice;
+
+  function resetFilters() {
+    setSearch("");
+    setCategoryId("");
+    setBrandId("");
+    setStatus("");
+    setActiveStatus("");
+    setFeaturedOnly(false);
+    setMinPrice("");
+    setMaxPrice("");
+    setPage(1);
+  }
 
   function toggleStatus(product: ProductRow) {
     if (product.isActive) {
@@ -97,9 +145,9 @@ export default function AdminProductsPage() {
         </Button>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 flex flex-wrap items-center gap-3">
         <Input
-          placeholder="Search products..."
+          placeholder="Search by name, SKU, or description..."
           value={search}
           onChange={(event) => {
             setSearch(event.target.value);
@@ -107,6 +155,112 @@ export default function AdminProductsPage() {
           }}
           className="max-w-xs"
         />
+
+        <select
+          value={categoryId}
+          onChange={(event) => {
+            setCategoryId(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Categories</option>
+          {categories?.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={brandId}
+          onChange={(event) => {
+            setBrandId(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Brands</option>
+          {brands?.map((brand) => (
+            <option key={brand.id} value={brand.id}>
+              {brand.name}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={status}
+          onChange={(event) => {
+            setStatus(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">All Statuses</option>
+          {STATUS_OPTIONS.map((option) => (
+            <option key={option} value={option}>
+              {option.replace("_", " ")}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={activeStatus}
+          onChange={(event) => {
+            setActiveStatus(event.target.value);
+            setPage(1);
+          }}
+          className="h-9 rounded-lg border border-input bg-transparent px-2.5 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+        >
+          <option value="">Active & Inactive</option>
+          <option value="active">Active Only</option>
+          <option value="inactive">Inactive Only</option>
+        </select>
+
+        <label className="flex h-9 items-center gap-2 rounded-lg border border-input px-2.5 text-sm">
+          <input
+            type="checkbox"
+            checked={featuredOnly}
+            onChange={(event) => {
+              setFeaturedOnly(event.target.checked);
+              setPage(1);
+            }}
+            className="h-4 w-4 rounded border-input"
+          />
+          Featured only
+        </label>
+
+        <div className="flex items-center gap-1.5">
+          <Input
+            type="number"
+            min="0"
+            placeholder="Min ৳"
+            value={minPrice}
+            onChange={(event) => {
+              setMinPrice(event.target.value);
+              setPage(1);
+            }}
+            className="w-24"
+          />
+          <span className="text-sm text-muted-foreground">–</span>
+          <Input
+            type="number"
+            min="0"
+            placeholder="Max ৳"
+            value={maxPrice}
+            onChange={(event) => {
+              setMaxPrice(event.target.value);
+              setPage(1);
+            }}
+            className="w-24"
+          />
+        </div>
+
+        {hasActiveFilters && (
+          <Button variant="ghost" size="sm" onClick={resetFilters}>
+            Clear filters
+          </Button>
+        )}
       </div>
 
       {isLoading && <Loading label="Loading products..." />}
@@ -119,7 +273,13 @@ export default function AdminProductsPage() {
       )}
 
       {data && data.data.length === 0 && (
-        <EmptyState title="No products found" />
+        <EmptyState
+          title={
+            hasActiveFilters
+              ? "No products match your filters"
+              : "No products found"
+          }
+        />
       )}
 
       {data && data.data.length > 0 && (

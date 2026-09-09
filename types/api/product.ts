@@ -61,6 +61,8 @@ export interface ProductQueryParams {
   status?: ApiProductStatus;
   isFeatured?: boolean;
   isActive?: boolean;
+  minPrice?: number;
+  maxPrice?: number;
   sortBy?: "name" | "price" | "createdAt" | "stockQuantity" | "averageRating";
   sortOrder?: "asc" | "desc";
 }
