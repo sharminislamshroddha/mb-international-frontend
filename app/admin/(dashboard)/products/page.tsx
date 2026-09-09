@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
@@ -21,6 +21,16 @@ import { formatPrice } from "@/lib/format";
 
 const PAGE_SIZE = 10;
 
+interface ProductRow {
+  id: string;
+  name: string;
+  categoryId: string;
+  sku: string;
+  price: string;
+  stockQuantity: number;
+  isActive: boolean;
+}
+
 export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
@@ -36,15 +46,7 @@ export default function AdminProductsPage() {
   const deleteProduct = useDeleteProduct();
   const updateProduct = useUpdateProduct();
 
-  function toggleStatus(product: {
-    id: string;
-    name: string;
-    categoryId: string;
-    sku: string;
-    price: string;
-    stockQuantity: number;
-    isActive: boolean;
-  }) {
+  function toggleStatus(product: ProductRow) {
     if (product.isActive) {
       deleteProduct.mutate(product.id);
       return;
@@ -61,6 +63,16 @@ export default function AdminProductsPage() {
         isActive: true,
       },
     });
+  }
+
+  function handleDelete(product: ProductRow) {
+    if (
+      window.confirm(
+        `Delete "${product.name}"? It will no longer appear in the store.`
+      )
+    ) {
+      deleteProduct.mutate(product.id);
+    }
   }
 
   return (
@@ -161,15 +173,20 @@ export default function AdminProductsPage() {
                       {product.stockQuantity}
                     </td>
                     <td className="px-4 py-3">
-                      <Badge
-                        className={
-                          product.isActive
-                            ? "border-transparent bg-success/10 text-success"
-                            : "border-transparent bg-muted text-muted-foreground"
-                        }
+                      <button
+                        type="button"
+                        onClick={() => toggleStatus(product)}
                       >
-                        {product.isActive ? "Active" : "Inactive"}
-                      </Badge>
+                        <Badge
+                          className={
+                            product.isActive
+                              ? "border-transparent bg-success/10 text-success"
+                              : "border-transparent bg-muted text-muted-foreground"
+                          }
+                        >
+                          {product.isActive ? "Active" : "Inactive"}
+                        </Badge>
+                      </button>
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-1.5">
@@ -187,13 +204,13 @@ export default function AdminProductsPage() {
                         </Button>
 
                         <Button
-                          size="sm"
+                          size="icon-sm"
                           variant="outline"
-                          onClick={() => toggleStatus(product)}
+                          aria-label="Delete product"
+                          disabled={!product.isActive}
+                          onClick={() => handleDelete(product)}
                         >
-                          {product.isActive
-                            ? "Deactivate"
-                            : "Activate"}
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
                         </Button>
                       </div>
                     </td>

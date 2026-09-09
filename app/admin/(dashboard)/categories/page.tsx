@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -52,6 +52,16 @@ export default function AdminCategoriesPage() {
         id: category.id,
         payload: { name: category.name, isActive: true },
       });
+    }
+  }
+
+  function handleDelete(category: ApiCategory) {
+    if (
+      window.confirm(
+        `Delete "${category.name}"? It will no longer appear in the store.`
+      )
+    ) {
+      deleteCategory.mutate(category.id);
     }
   }
 
@@ -149,14 +159,26 @@ export default function AdminCategoriesPage() {
                     </button>
                   </td>
                   <td className="px-4 py-3">
-                    <Button
-                      size="icon-sm"
-                      variant="outline"
-                      aria-label="Edit category"
-                      onClick={() => openEdit(category)}
-                    >
-                      <Pencil className="h-3.5 w-3.5" />
-                    </Button>
+                    <div className="flex items-center gap-1.5">
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        aria-label="Edit category"
+                        onClick={() => openEdit(category)}
+                      >
+                        <Pencil className="h-3.5 w-3.5" />
+                      </Button>
+
+                      <Button
+                        size="icon-sm"
+                        variant="outline"
+                        aria-label="Delete category"
+                        disabled={!category.isActive}
+                        onClick={() => handleDelete(category)}
+                      >
+                        <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
